@@ -26,7 +26,7 @@ LIMIT 1;
 ***********--Find the average rating for each category ordered by the highest rated to lowest rated.--
 SELECT category, AVG(rating) FROM analytics
 GROUP BY category
-ORDER BY DESC;
+ORDER BY avg DESC;
 
 --Find the name, price, and rating of the most expensive app with a rating that’s less than 3.--
 SELECT app_name, price, rating FROM analytics
@@ -55,12 +55,16 @@ WHERE last_updated = (SELECT MIN(last_updated) FROM analytics);
 SELECT * FROM analytics
 WHERE last_updated = (SELECT MAX(last_updated) FROM analytics);
 
-**********--Count all the reviews in the Google Play Store.--
-SELECT SUM(reviews) AS 'All Reviews' FROM analytics;
+--Count all the reviews in the Google Play Store.--
+SELECT SUM(reviews) AS "All Reviews" FROM analytics;
 
-**********--Find all the categories that have more than 300 apps in them.--
+--Find all the categories that have more than 300 apps in them.--
 SELECT category FROM analytics
-WHERE COUNT(category) >= 300;
+GROUP BY category
+HAVING COUNT(*) > 300;
 
 --Find the app that has the highest proportion of min_installs to reviews, among apps that have been installed at least 100,000 times. Display the name of the app along with the number of reviews, the min_installs, and the proportion.--
-SELECT app_name FROM analytics
+SELECT app_name, reviews, min_installs, min_installs/reviews AS proportion FROM analytics
+WHERE min_installs >= 100000
+ORDER BY proportion DESC
+LIMIT 1;
